@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="1" />
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="mantle" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="robe" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+  </defs>
+  <!-- Radiant Halo Glow -->
+  <circle cx="24" cy="18" r="16" fill="url(#halo)" />
+  
+  <!-- Crown / Halo Ring -->
+  <circle cx="24" cy="15" r="9" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="2,2" />
+  
+  <!-- Outer Marian Blue Mantle -->
+  <path d="M24 10 C18 10 14 16 14 26 C14 34 16 42 16 44 L32 44 C32 42 34 34 34 26 C34 16 30 10 24 10 Z" fill="url(#mantle)" />
+  
+  <!-- Inner White Robe -->
+  <path d="M24 16 C20 18 19 25 19 44 L29 44 C29 25 28 18 24 16 Z" fill="url(#robe)" />
+  
+  <!-- Head / Face -->
+  <ellipse cx="24" cy="18" rx="4" ry="5" fill="#fed7aa" />
+  
+  <!-- Hands Joined in Rosary Prayer -->
+  <circle cx="24" cy="28" r="3" fill="#fed7aa" />
+  
+  <!-- Golden Stars on Mantle -->
+  <polygon points="24,6 25,9 28,9 25.5,11 26.5,14 24,12 21.5,14 22.5,11 20,9 23,9" fill="#f59e0b" transform="scale(0.5) translate(24, -2)" />
+</svg>

@@ -1,0 +1,613 @@
+{
+  "title": "Feast of Our Lady of the Rosary",
+  "subtitle": "Annual Village Ward-to-Ward Procession",
+  "villageName": "St. Xavier's Village Parish",
+  "status": "live",
+  "currentStopId": "stop-2",
+  "nextStopId": "stop-3",
+  "mapProvider": "leaflet",
+  "googleMapsApiKey": "",
+  "adminPin": "1234",
+  "bannerMessage": "Procession is currently at The Fernandes Family residence. Rosary prayer in progress.",
+  "lastUpdated": "2026-09-27T07:24:06.867Z",
+  "currentLocation": {
+    "coordinates": {
+      "lat": 15.2848,
+      "lng": 73.9862
+    },
+    "updatedAt": "2026-09-27T07:20:41.278Z",
+    "source": "stop_anchor",
+    "accuracy": 5
+  },
+  "stops": [
+    {
+      "id": "stop-1",
+      "order": 1,
+      "familyName": "Parish Sanctuary",
+      "houseNumber": "Main Church",
+      "address": "Church Square, Ward 1",
+      "date": "2026-10-01",
+      "scheduledArrival": "17:00",
+      "scheduledDeparture": "17:30",
+      "actualArrival": "17:00",
+      "actualDeparture": "17:32",
+      "status": "visited",
+      "coordinates": {
+        "lat": 15.283,
+        "lng": 73.9845
+      },
+      "contactNumber": "+91 98221 00101",
+      "notes": "Opening Hymn, Statue Blessing, and Procession departure."
+    },
+    {
+      "id": "stop-2",
+      "order": 2,
+      "familyName": "The Fernandes Family",
+      "houseNumber": "House #104",
+      "address": "St. Anne Cross Road, Ward 1",
+      "date": "2026-10-01",
+      "scheduledArrival": "17:45",
+      "scheduledDeparture": "18:15",
+      "actualArrival": "17:48",
+      "status": "current",
+      "coordinates": {
+        "lat": 15.2848,
+        "lng": 73.9862
+      },
+      "contactNumber": "+91 98221 11202",
+      "notes": "Decade 1 of Rosary & Litany chanting. Traditional floral altar prepared."
+    },
+    {
+      "id": "stop-3",
+      "order": 3,
+      "familyName": "The D'Silva Family",
+      "houseNumber": "House #72",
+      "address": "Main Cross Road, Ward 2",
+      "date": "2026-10-01",
+      "scheduledArrival": "18:30",
+      "scheduledDeparture": "19:00",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.2865,
+        "lng": 73.988
+      },
+      "contactNumber": "+91 98221 22303",
+      "notes": "Decade 2 of Rosary. Blessing of sick family elders."
+    },
+    {
+      "id": "stop-4",
+      "order": 4,
+      "familyName": "The Pereira Homestead",
+      "houseNumber": "House #45",
+      "address": "Palm Grove Lane, Ward 2",
+      "date": "2026-10-01",
+      "scheduledArrival": "19:15",
+      "scheduledDeparture": "19:45",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.2882,
+        "lng": 73.9868
+      },
+      "contactNumber": "+91 98221 33404",
+      "notes": "Outdoor Grotto blessing and special youth choir hymns."
+    },
+    {
+      "id": "stop-5",
+      "order": 5,
+      "familyName": "The Rodrigues Family",
+      "houseNumber": "House #18",
+      "address": "Hillside View Road, Ward 3",
+      "date": "2026-10-02",
+      "scheduledArrival": "17:30",
+      "scheduledDeparture": "18:00",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.2898,
+        "lng": 73.9842
+      },
+      "contactNumber": "+91 98221 44505",
+      "notes": "Candlelight reception and family consecration."
+    },
+    {
+      "id": "stop-6",
+      "order": 6,
+      "familyName": "The Coutinho Residence",
+      "houseNumber": "House #89",
+      "address": "Riverside Way, Ward 3",
+      "date": "2026-10-02",
+      "scheduledArrival": "18:20",
+      "scheduledDeparture": "18:50",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.288,
+        "lng": 73.982
+      },
+      "contactNumber": "+91 98221 55606",
+      "notes": "Parish fellowship and sweet distribution (Chana & Doce)."
+    },
+    {
+      "id": "stop-7",
+      "order": 7,
+      "familyName": "The Mascarenhas Family",
+      "houseNumber": "House #112",
+      "address": "Market Square Approach, Ward 4",
+      "date": "2026-10-02",
+      "scheduledArrival": "19:10",
+      "scheduledDeparture": "19:40",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.2855,
+        "lng": 73.9828
+      },
+      "contactNumber": "+91 98221 66707",
+      "notes": "Final ward station prayer before entering chapel grounds."
+    },
+    {
+      "id": "stop-8",
+      "order": 8,
+      "familyName": "Village Grotto & Chapel",
+      "houseNumber": "Mount Mary Grotto",
+      "address": "Chapel Hilltop",
+      "date": "2026-10-02",
+      "scheduledArrival": "20:00",
+      "scheduledDeparture": "21:00",
+      "status": "pending",
+      "coordinates": {
+        "lat": 15.2838,
+        "lng": 73.9835
+      },
+      "contactNumber": "+91 98221 77808",
+      "notes": "Solemn Benediction, Final Blessing & Parish fireworks display."
+    }
+  ],
+  "customRouteCoordinates": [
+    {
+      "lat": 15.282983,
+      "lng": 73.984632
+    },
+    {
+      "lat": 15.283069,
+      "lng": 73.984644
+    },
+    {
+      "lat": 15.283557,
+      "lng": 73.98468
+    },
+    {
+      "lat": 15.283807,
+      "lng": 73.984703
+    },
+    {
+      "lat": 15.283866,
+      "lng": 73.984705
+    },
+    {
+      "lat": 15.284878,
+      "lng": 73.98475
+    },
+    {
+      "lat": 15.285144,
+      "lng": 73.984732
+    },
+    {
+      "lat": 15.285297,
+      "lng": 73.984097
+    },
+    {
+      "lat": 15.285441,
+      "lng": 73.984084
+    },
+    {
+      "lat": 15.285536,
+      "lng": 73.983638
+    },
+    {
+      "lat": 15.285771,
+      "lng": 73.983834
+    },
+    {
+      "lat": 15.286055,
+      "lng": 73.984207
+    },
+    {
+      "lat": 15.285882,
+      "lng": 73.984541
+    },
+    {
+      "lat": 15.285474,
+      "lng": 73.985018
+    },
+    {
+      "lat": 15.285375,
+      "lng": 73.985152
+    },
+    {
+      "lat": 15.285329,
+      "lng": 73.985431
+    },
+    {
+      "lat": 15.285283,
+      "lng": 73.985816
+    },
+    {
+      "lat": 15.285235,
+      "lng": 73.986217
+    },
+    {
+      "lat": 15.284821,
+      "lng": 73.986112
+    },
+    {
+      "lat": 15.284821,
+      "lng": 73.986112
+    },
+    {
+      "lat": 15.285235,
+      "lng": 73.986217
+    },
+    {
+      "lat": 15.285122,
+      "lng": 73.986552
+    },
+    {
+      "lat": 15.284918,
+      "lng": 73.98716
+    },
+    {
+      "lat": 15.284882,
+      "lng": 73.987266
+    },
+    {
+      "lat": 15.284835,
+      "lng": 73.987623
+    },
+    {
+      "lat": 15.284953,
+      "lng": 73.988339
+    },
+    {
+      "lat": 15.285,
+      "lng": 73.988502
+    },
+    {
+      "lat": 15.285682,
+      "lng": 73.988559
+    },
+    {
+      "lat": 15.285831,
+      "lng": 73.988615
+    },
+    {
+      "lat": 15.286138,
+      "lng": 73.988375
+    },
+    {
+      "lat": 15.286486,
+      "lng": 73.987986
+    },
+    {
+      "lat": 15.28656,
+      "lng": 73.987903
+    },
+    {
+      "lat": 15.28738,
+      "lng": 73.987448
+    },
+    {
+      "lat": 15.287447,
+      "lng": 73.987466
+    },
+    {
+      "lat": 15.287588,
+      "lng": 73.987599
+    },
+    {
+      "lat": 15.287626,
+      "lng": 73.987627
+    },
+    {
+      "lat": 15.288023,
+      "lng": 73.987737
+    },
+    {
+      "lat": 15.288154,
+      "lng": 73.987773
+    },
+    {
+      "lat": 15.289012,
+      "lng": 73.98779
+    },
+    {
+      "lat": 15.288154,
+      "lng": 73.987773
+    },
+    {
+      "lat": 15.288023,
+      "lng": 73.987737
+    },
+    {
+      "lat": 15.287626,
+      "lng": 73.987627
+    },
+    {
+      "lat": 15.287588,
+      "lng": 73.987599
+    },
+    {
+      "lat": 15.287447,
+      "lng": 73.987466
+    },
+    {
+      "lat": 15.28738,
+      "lng": 73.987448
+    },
+    {
+      "lat": 15.28656,
+      "lng": 73.987903
+    },
+    {
+      "lat": 15.286138,
+      "lng": 73.988375
+    },
+    {
+      "lat": 15.285831,
+      "lng": 73.988615
+    },
+    {
+      "lat": 15.285682,
+      "lng": 73.988559
+    },
+    {
+      "lat": 15.286161,
+      "lng": 73.987705
+    },
+    {
+      "lat": 15.286255,
+      "lng": 73.987558
+    },
+    {
+      "lat": 15.286169,
+      "lng": 73.987363
+    },
+    {
+      "lat": 15.286161,
+      "lng": 73.98677
+    },
+    {
+      "lat": 15.28602,
+      "lng": 73.986453
+    },
+    {
+      "lat": 15.286028,
+      "lng": 73.985786
+    },
+    {
+      "lat": 15.286434,
+      "lng": 73.985779
+    },
+    {
+      "lat": 15.287466,
+      "lng": 73.985763
+    },
+    {
+      "lat": 15.287581,
+      "lng": 73.985761
+    },
+    {
+      "lat": 15.287647,
+      "lng": 73.98576
+    },
+    {
+      "lat": 15.287647,
+      "lng": 73.9863
+    },
+    {
+      "lat": 15.287622,
+      "lng": 73.986767
+    },
+    {
+      "lat": 15.287621,
+      "lng": 73.986794
+    },
+    {
+      "lat": 15.287647,
+      "lng": 73.9863
+    },
+    {
+      "lat": 15.287647,
+      "lng": 73.98576
+    },
+    {
+      "lat": 15.287581,
+      "lng": 73.985761
+    },
+    {
+      "lat": 15.287573,
+      "lng": 73.984691
+    },
+    {
+      "lat": 15.287573,
+      "lng": 73.984623
+    },
+    {
+      "lat": 15.287928,
+      "lng": 73.98461
+    },
+    {
+      "lat": 15.288107,
+      "lng": 73.984603
+    },
+    {
+      "lat": 15.288237,
+      "lng": 73.984599
+    },
+    {
+      "lat": 15.288842,
+      "lng": 73.984581
+    },
+    {
+      "lat": 15.289053,
+      "lng": 73.984591
+    },
+    {
+      "lat": 15.289135,
+      "lng": 73.984599
+    },
+    {
+      "lat": 15.289184,
+      "lng": 73.984595
+    },
+    {
+      "lat": 15.289223,
+      "lng": 73.98457
+    },
+    {
+      "lat": 15.289251,
+      "lng": 73.984522
+    },
+    {
+      "lat": 15.289338,
+      "lng": 73.984347
+    },
+    {
+      "lat": 15.289492,
+      "lng": 73.984036
+    },
+    {
+      "lat": 15.289705,
+      "lng": 73.983604
+    },
+    {
+      "lat": 15.288861,
+      "lng": 73.982756
+    },
+    {
+      "lat": 15.28844,
+      "lng": 73.982334
+    },
+    {
+      "lat": 15.288114,
+      "lng": 73.982006
+    },
+    {
+      "lat": 15.288061,
+      "lng": 73.981951
+    },
+    {
+      "lat": 15.288052,
+      "lng": 73.981942
+    },
+    {
+      "lat": 15.287793,
+      "lng": 73.981694
+    },
+    {
+      "lat": 15.288053,
+      "lng": 73.981377
+    },
+    {
+      "lat": 15.288101,
+      "lng": 73.98135
+    },
+    {
+      "lat": 15.288377,
+      "lng": 73.981609
+    },
+    {
+      "lat": 15.288061,
+      "lng": 73.981951
+    },
+    {
+      "lat": 15.288114,
+      "lng": 73.982006
+    },
+    {
+      "lat": 15.287796,
+      "lng": 73.982376
+    },
+    {
+      "lat": 15.2876,
+      "lng": 73.982616
+    },
+    {
+      "lat": 15.287141,
+      "lng": 73.98316
+    },
+    {
+      "lat": 15.286055,
+      "lng": 73.984207
+    },
+    {
+      "lat": 15.285771,
+      "lng": 73.983834
+    },
+    {
+      "lat": 15.285536,
+      "lng": 73.983638
+    },
+    {
+      "lat": 15.285486,
+      "lng": 73.983444
+    },
+    {
+      "lat": 15.285322,
+      "lng": 73.983371
+    },
+    {
+      "lat": 15.285598,
+      "lng": 73.982856
+    },
+    {
+      "lat": 15.285675,
+      "lng": 73.982712
+    },
+    {
+      "lat": 15.285322,
+      "lng": 73.983371
+    },
+    {
+      "lat": 15.285486,
+      "lng": 73.983444
+    },
+    {
+      "lat": 15.285536,
+      "lng": 73.983638
+    },
+    {
+      "lat": 15.285441,
+      "lng": 73.984084
+    },
+    {
+      "lat": 15.285297,
+      "lng": 73.984097
+    },
+    {
+      "lat": 15.285144,
+      "lng": 73.984732
+    },
+    {
+      "lat": 15.284878,
+      "lng": 73.98475
+    },
+    {
+      "lat": 15.283866,
+      "lng": 73.984705
+    },
+    {
+      "lat": 15.283807,
+      "lng": 73.984703
+    },
+    {
+      "lat": 15.283557,
+      "lng": 73.98468
+    },
+    {
+      "lat": 15.283599,
+      "lng": 73.983744
+    },
+    {
+      "lat": 15.28361,
+      "lng": 73.983491
+    }
+  ]
+}
