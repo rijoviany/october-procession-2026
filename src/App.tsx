@@ -61,15 +61,15 @@ const ProcessionApp: React.FC = () => {
       {currentTab === 'public' ? (
         /* PUBLIC VIEW */
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-          {/* Live Status Header Banner (Desktop only - mobile uses bottom sheet) */}
-          <div className="hidden lg:block">
+          {/* Live Status Header Banner (Visible on Tablet & Desktop) */}
+          <div className="hidden sm:block flex-shrink-0">
             <LiveStatusBanner />
           </div>
 
           {/* Map + Desktop Schedule Drawer Layout */}
           <div className="flex-1 flex flex-col lg:flex-row min-h-0 relative overflow-hidden">
             {/* Interactive Map (Full height on mobile!) */}
-            <div className="flex-1 h-full min-h-[300px] relative">
+            <div className="flex-1 h-full min-h-[320px] relative">
               <ProcessionMap isAdminMode={false} />
 
               {/* Mobile Bottom Sheet (Google Maps / Apple Maps style on mobile) */}

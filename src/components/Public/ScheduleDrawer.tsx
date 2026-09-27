@@ -56,12 +56,12 @@ export const ScheduleDrawer: React.FC<ScheduleDrawerProps> = ({ isOpen, onToggle
 
   return (
     <div className={`transition-all duration-300 ease-in-out bg-slate-900/95 backdrop-blur-md border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col ${
-      isOpen ? 'h-[50vh] lg:h-full lg:w-96' : 'h-14 lg:h-full lg:w-14'
+      isOpen ? 'h-[50vh] lg:h-full lg:w-96' : 'h-14 lg:h-full lg:w-16'
     }`}>
-      {/* Drawer Header */}
+      {/* Drawer Header adhering to 8pt grid (h-14 / 56px) */}
       <div 
         onClick={onToggle}
-        className="px-4 py-3 border-b border-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 transition select-none flex-shrink-0"
+        className="px-4 h-14 border-b border-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 transition select-none flex-shrink-0"
       >
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-sky-400" />
@@ -70,28 +70,28 @@ export const ScheduleDrawer: React.FC<ScheduleDrawerProps> = ({ isOpen, onToggle
           </span>
         </div>
 
-        <button className="text-slate-400 hover:text-slate-200">
+        <button className="text-slate-300 hover:text-white p-1">
           {isOpen ? <ChevronDown className="w-5 h-5 lg:rotate-90" /> : <ChevronUp className="w-5 h-5 lg:-rotate-90" />}
         </button>
       </div>
 
-      {/* Drawer Content (visible when open) */}
+      {/* Drawer Content */}
       {isOpen && (
-        <div className="flex-1 flex flex-col min-h-0 p-3 overflow-hidden">
-          {/* Search Box */}
-          <div className="relative mb-3">
+        <div className="flex-1 flex flex-col min-h-0 p-4 space-y-4 overflow-hidden">
+          {/* Search Box - 40px height */}
+          <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search family, house, or road..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition"
+              className="w-full h-10 pl-9 pr-8 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
               >
                 ✕
               </button>

@@ -13,7 +13,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   setCurrentTab,
   onOpenAdminAuth,
 }) => {
-  const { data, isConnected, isAdmin, refreshData } = useProcession();
+  const { data, isConnected, isOfflineMode, isAdmin, refreshData } = useProcession();
 
   const handleAdminClick = () => {
     if (isAdmin) {
@@ -26,10 +26,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isLive = data?.status === 'live';
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
+    <header className="sticky top-0 z-30 w-full bg-slate-950/95 backdrop-blur-md border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
         {/* Left: Branding & Village Name */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="relative flex-shrink-0">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-600 via-marian-600 to-amber-500 p-0.5 shadow-md flex items-center justify-center">
               <img src="/statue-icon.svg" alt="Marian Icon" className="w-5 h-5 sm:w-7 sm:h-7" />
@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <h1 className="text-xs sm:text-base font-bold text-white truncate tracking-tight">
                 {data?.title || 'Mother Mary Village Procession'}
               </h1>
@@ -57,21 +57,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-[10px] sm:text-[11px] text-sky-400/90 truncate">
+            <p className="text-[10px] sm:text-xs text-sky-400 font-medium truncate">
               {data?.villageName || 'Parish Community Village'}
             </p>
           </div>
         </div>
 
         {/* Right: View Switcher & Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {/* Connection status indicator */}
           <div 
-            title={isConnected ? 'Connected to Live Server' : 'Connecting to Server...'}
-            className="hidden md:flex items-center gap-1 text-[11px] text-slate-400 px-2 py-1 rounded bg-slate-900 border border-slate-800"
+            title={isConnected ? 'Connected to live server' : isOfflineMode ? 'Running seamlessly with local cached data' : 'Connecting to server...'}
+            className="hidden sm:flex items-center gap-1.5 text-xs text-slate-300 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800"
           >
-            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></span>
-            <span>{isConnected ? 'Sync Active' : 'Connecting'}</span>
+            <span className={`w-2 h-2 rounded-full ${
+              isConnected ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : isOfflineMode ? 'bg-sky-400' : 'bg-amber-400 animate-pulse'
+            }`}></span>
+            <span className="font-mono text-[11px]">{isConnected ? 'Live Sync' : isOfflineMode ? 'Local Cache' : 'Connecting'}</span>
           </div>
 
           {/* Navigation Mode Pill */}

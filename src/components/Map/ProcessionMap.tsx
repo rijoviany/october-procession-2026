@@ -37,19 +37,19 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
   const [activeTileType, setActiveTileType] = useState<'streets' | 'satellite' | 'dark'>('streets');
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
-  // Tile layer URLs
+  // Tile layer URLs - High performance & 100% free tier CDN
   const tileLayers = {
-    streets: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    streets: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
     satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    dark: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
   };
 
   // Initialize Leaflet Map
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    const initialLat = data?.currentLocation.coordinates.lat || 15.2848;
-    const initialLng = data?.currentLocation.coordinates.lng || 73.9862;
+    const initialLat = data?.currentLocation?.coordinates?.lat || 15.2848;
+    const initialLng = data?.currentLocation?.coordinates?.lng || 73.9862;
 
     const map = L.map(mapContainerRef.current, {
       center: [initialLat, initialLng],
@@ -58,19 +58,34 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       attributionControl: false,
     });
 
-    // Add zoom control at bottom right
+    // Add zoom control at bottom right (hidden on mobile to prevent bottom sheet overlap)
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     // Initial tile layer
     const tileLayer = L.tileLayer(tileLayers.streets, {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      subdomains: 'abcd',
+      attribution: '&copy; CARTO &copy; OpenStreetMap'
     }).addTo(map);
 
     tileLayerRef.current = tileLayer;
     mapInstanceRef.current = map;
 
+    // Architectural guideline: Resilient canvas sizing on all screen widths
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
       map.remove();
       mapInstanceRef.current = null;
     };
@@ -85,9 +100,11 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       map.removeLayer(tileLayerRef.current);
     }
 
+    const subdomains = activeTileType === 'satellite' ? [] : ['a', 'b', 'c', 'd'];
     const newLayer = L.tileLayer(tileLayers[activeTileType], {
       maxZoom: 19,
-      attribution: activeTileType === 'satellite' ? '&copy; Esri World Imagery' : '&copy; OpenStreetMap'
+      subdomains: subdomains,
+      attribution: activeTileType === 'satellite' ? '&copy; Esri World Imagery' : '&copy; CARTO'
     }).addTo(map);
 
     tileLayerRef.current = newLayer;
