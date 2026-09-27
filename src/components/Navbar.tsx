@@ -27,29 +27,29 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-30 w-full bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
         {/* Left: Branding & Village Name */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="relative flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 via-marian-600 to-amber-500 p-0.5 shadow-md flex items-center justify-center">
-              <img src="/statue-icon.svg" alt="Marian Icon" className="w-7 h-7" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-600 via-marian-600 to-amber-500 p-0.5 shadow-md flex items-center justify-center">
+              <img src="/statue-icon.svg" alt="Marian Icon" className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
             {isLive && (
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
             )}
           </div>
 
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm sm:text-base font-bold text-white truncate tracking-tight">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xs sm:text-base font-bold text-white truncate tracking-tight">
                 {data?.title || 'Mother Mary Village Procession'}
               </h1>
               {isLive ? (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <Radio className="w-2.5 h-2.5 animate-pulse" /> LIVE NOW
+                  <Radio className="w-2.5 h-2.5 animate-pulse" /> LIVE
                 </span>
               ) : (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
@@ -57,14 +57,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-sky-400/90 truncate">
+            <p className="text-[10px] sm:text-[11px] text-sky-400/90 truncate">
               {data?.villageName || 'Parish Community Village'}
             </p>
           </div>
         </div>
 
         {/* Right: View Switcher & Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
           {/* Connection status indicator */}
           <div 
             title={isConnected ? 'Connected to Live Server' : 'Connecting to Server...'}
@@ -75,29 +75,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Navigation Mode Pill */}
-          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 shadow-inner">
+          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-0.5 sm:p-1 shadow-inner">
             <button
               onClick={() => setCurrentTab('public')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 currentTab === 'public'
                   ? 'bg-sky-600 text-white shadow'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Map className="w-3.5 h-3.5" />
-              <span>Public View</span>
+              <span>Public</span>
             </button>
 
             <button
               onClick={handleAdminClick}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 currentTab === 'admin'
                   ? 'bg-amber-600 text-white shadow'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Shield className="w-3.5 h-3.5" />
-              <span>Admin {isAdmin ? '✓' : ''}</span>
+              <span>Admin{isAdmin ? ' ✓' : ''}</span>
             </button>
           </div>
 

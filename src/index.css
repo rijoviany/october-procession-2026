@@ -3,10 +3,22 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  html, body, #root {
+    height: 100%;
+    height: 100dvh;
     @apply bg-slate-950 text-slate-100 font-sans;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Safe area padding utilities for mobile phones */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Custom scrollbar */

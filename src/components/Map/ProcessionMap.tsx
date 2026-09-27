@@ -235,15 +235,19 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
         marker.setIcon(customIcon);
         marker.getPopup()?.setContent(popupHtml);
       } else {
-        marker = L.marker([stop.coordinates.lat, stop.coordinates.lng], { icon: customIcon })
+        const newMarker = L.marker([stop.coordinates.lat, stop.coordinates.lng], { icon: customIcon })
           .addTo(map)
           .bindPopup(popupHtml);
 
-        marker.on('click', () => {
+        newMarker.on('click', () => {
           setSelectedStopId(stop.id);
+          // On mobile, close popup and let StopDetailModal show
+          if (window.innerWidth < 1024) {
+            newMarker.closePopup();
+          }
         });
 
-        currentMarkers.set(stop.id, marker);
+        currentMarkers.set(stop.id, newMarker);
       }
     });
   }, [data?.stops, setSelectedStopId]);
@@ -359,7 +363,7 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full min-h-[420px] bg-slate-950 overflow-hidden select-none">
+    <div className="relative w-full h-full min-h-0 bg-slate-950 overflow-hidden select-none">
       {/* Map DOM node */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
