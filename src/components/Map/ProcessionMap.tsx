@@ -34,17 +34,14 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
   const routePolylineRef = useRef<L.Polyline | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
 
-  const [activeTileType, setActiveTileType] = useState<'streets' | 'satellite' | 'dark'>('streets');
+  const [activeTileType, setActiveTileType] = useState<'streets' | 'satellite' | 'osm'>('streets');
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
-  const cartoApiKey = data?.cartoApiKey?.trim() || 'cb1_406k_1_8a9ea0e9a59d9cf597cf0557';
-  const cartoQuery = cartoApiKey ? `?api_key=${cartoApiKey}` : '';
-
-  // Tile layer URLs - High performance & CARTO CDN with provided API key
+  // 100% Free, high-resolution, watermark-free global tile providers
   const tileLayers = {
-    streets: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${cartoQuery}`,
+    streets: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    dark: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${cartoQuery}`
+    osm: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
   };
 
   // Initialize Leaflet Map
@@ -64,11 +61,10 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     // Add zoom control at bottom right (hidden on mobile to prevent bottom sheet overlap)
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Initial tile layer
+    // Initial tile layer - crisp, watermark-free Esri Street Map
     const tileLayer = L.tileLayer(tileLayers.streets, {
       maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '&copy; CARTO &copy; OpenStreetMap'
+      attribution: '&copy; Esri &copy; OpenStreetMap'
     }).addTo(map);
 
     tileLayerRef.current = tileLayer;
@@ -103,11 +99,9 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       map.removeLayer(tileLayerRef.current);
     }
 
-    const subdomains = activeTileType === 'satellite' ? [] : ['a', 'b', 'c', 'd'];
     const newLayer = L.tileLayer(tileLayers[activeTileType], {
       maxZoom: 19,
-      subdomains: subdomains,
-      attribution: activeTileType === 'satellite' ? '&copy; Esri World Imagery' : '&copy; CARTO'
+      attribution: activeTileType === 'satellite' ? '&copy; Esri World Imagery' : '&copy; Esri & OpenStreetMap'
     }).addTo(map);
 
     tileLayerRef.current = newLayer;
@@ -426,12 +420,12 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
                 🛰️ Satellite
               </button>
               <button
-                onClick={() => { setActiveTileType('dark'); setShowLayerMenu(false); }}
+                onClick={() => { setActiveTileType('osm'); setShowLayerMenu(false); }}
                 className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  activeTileType === 'dark' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                  activeTileType === 'osm' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                🌌 Clean Light/Dark
+                🌍 OpenStreetMap
               </button>
             </div>
           )}
