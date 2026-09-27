@@ -65,7 +65,7 @@ export const LiveStatusBanner: React.FC = () => {
                   {currentStop ? currentStop.familyName : 'Moving between stations'}
                 </h3>
                 <p className="text-xs text-slate-300 truncate">
-                  {currentStop ? `${currentStop.houseNumber}, ${currentStop.address}` : 'Statue in procession on road'}
+                  {currentStop ? `${currentStop.bccUnit || ''} • ${formatDate(currentStop.date)}` : 'Statue in procession on road'}
                 </p>
               </div>
             </div>
@@ -100,7 +100,7 @@ export const LiveStatusBanner: React.FC = () => {
                 </h3>
                 <p className="text-xs text-slate-300 truncate">
                   {nextStop 
-                    ? `${nextStop.houseNumber} • ETA ${formatTime(nextStop.scheduledArrival)} (${formatDate(nextStop.date)})` 
+                    ? `${nextStop.bccUnit || ''} • ${formatDate(nextStop.date)}` 
                     : 'Procession completed for this feast'}
                 </p>
               </div>

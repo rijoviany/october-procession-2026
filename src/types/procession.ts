@@ -9,18 +9,18 @@ export interface ProcessionStop {
   id: string;
   order: number;
   familyName: string;
-  houseNumber: string;
-  address: string;
+  bccUnit: string;           // Basic Christian Community Unit (BCC Unit)
   date: string;              // YYYY-MM-DD
-  scheduledArrival: string;  // HH:MM
-  scheduledDeparture: string;// HH:MM
-  actualArrival?: string;
-  actualDeparture?: string;
   status: StopStatus;
   coordinates: Coordinates;
+  houseNumber?: string;      // Optional house number
+  address?: string;          // Optional address details
+  scheduledArrival?: string; // Optional arrival time
+  scheduledDeparture?: string;
+  actualArrival?: string;
+  actualDeparture?: string;
   contactNumber?: string;
-  notes?: string;
-  photoUrl?: string;
+  notes?: string;            // Optional short note
 }
 
 export type ProcessionStatus = 'not_started' | 'live' | 'paused' | 'completed';

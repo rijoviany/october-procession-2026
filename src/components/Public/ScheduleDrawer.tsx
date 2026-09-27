@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useProcession } from '../../context/ProcessionContext';
 import { formatDate, formatTime, getStatusBadge } from '../../utils/formatting';
-import { Search, Calendar, ChevronDown, ChevronUp, MapPin, CheckCircle2, Clock } from 'lucide-react';
+import { Search, Calendar, ChevronDown, ChevronUp, MapPin, CheckCircle2, Clock, Users } from 'lucide-react';
 
 interface ScheduleDrawerProps {
   isOpen: boolean;
@@ -38,10 +38,11 @@ export const ScheduleDrawer: React.FC<ScheduleDrawerProps> = ({ isOpen, onToggle
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesName = stop.familyName.toLowerCase().includes(q);
-        const matchesHouse = stop.houseNumber.toLowerCase().includes(q);
-        const matchesAddress = stop.address.toLowerCase().includes(q);
-        const matchesNotes = stop.notes?.toLowerCase().includes(q);
-        return matchesName || matchesHouse || matchesAddress || matchesNotes;
+        const matchesBcc = !!stop.bccUnit?.toLowerCase().includes(q);
+        const matchesHouse = !!stop.houseNumber?.toLowerCase().includes(q);
+        const matchesAddress = !!stop.address?.toLowerCase().includes(q);
+        const matchesNotes = !!stop.notes?.toLowerCase().includes(q);
+        return matchesName || matchesBcc || matchesHouse || matchesAddress || matchesNotes;
       }
 
       return true;
@@ -199,26 +200,16 @@ export const ScheduleDrawer: React.FC<ScheduleDrawerProps> = ({ isOpen, onToggle
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-400 mb-2 truncate pl-6.5">
-                      {stop.houseNumber} {stop.address ? `• ${stop.address}` : ''}
-                    </p>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1.5 border-t border-slate-800">
-                      <div className="flex items-center gap-1 text-slate-400">
-                        <Calendar className="w-3 h-3 text-sky-400" />
+                    <div className="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-slate-800">
+                      <div className="flex items-center gap-1.5 text-sky-400 font-medium">
+                        <Users className="w-3.5 h-3.5" />
+                        <span className="truncate">{stop.bccUnit || 'BCC Unit'}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-slate-400 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         <span>{formatDate(stop.date)}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-amber-400 font-medium">
-                        <Clock className="w-3 h-3" />
-                        <span>{formatTime(stop.scheduledArrival)}</span>
-                      </div>
                     </div>
-
-                    {stop.notes && (
-                      <p className="mt-1.5 text-[10px] text-slate-400 italic line-clamp-1 bg-slate-900/60 px-2 py-0.5 rounded">
-                        "{stop.notes}"
-                      </p>
-                    )}
                   </div>
                 );
               })

@@ -213,7 +213,7 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
             </span>
           </div>
           <h4 class="font-bold text-slate-100 text-base leading-tight">${stop.familyName}</h4>
-          <p class="text-xs text-slate-400 mt-0.5">${stop.houseNumber} ${stop.address ? `• ${stop.address}` : ''}</p>
+          ${stop.bccUnit ? `<p class="text-xs font-medium text-emerald-400 mt-1">${stop.bccUnit}</p>` : ''}
           
           <div class="my-2.5 pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
             <div>
@@ -221,8 +221,8 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
               <span class="font-medium">${formatDate(stop.date)}</span>
             </div>
             <div class="text-right">
-              <span class="text-slate-400 block text-[10px]">Arrival Time</span>
-              <span class="font-medium text-amber-400">${formatTime(stop.scheduledArrival)}</span>
+              <span class="text-slate-400 block text-[10px]">Order No.</span>
+              <span class="font-bold text-sky-400">#${stop.order}</span>
             </div>
           </div>
 

@@ -11,7 +11,8 @@ import {
   Clock, 
   Crosshair, 
   ArrowRight,
-  List
+  List,
+  Users
 } from 'lucide-react';
 
 export const MobileBottomSheet: React.FC = () => {
@@ -50,9 +51,10 @@ export const MobileBottomSheet: React.FC = () => {
         const q = searchQuery.toLowerCase();
         return (
           stop.familyName.toLowerCase().includes(q) ||
-          stop.houseNumber.toLowerCase().includes(q) ||
-          stop.address.toLowerCase().includes(q) ||
-          stop.notes?.toLowerCase().includes(q)
+          (stop.bccUnit && stop.bccUnit.toLowerCase().includes(q)) ||
+          (stop.houseNumber && stop.houseNumber.toLowerCase().includes(q)) ||
+          (stop.address && stop.address.toLowerCase().includes(q)) ||
+          (stop.notes && stop.notes.toLowerCase().includes(q))
         );
       }
       return true;
@@ -308,18 +310,14 @@ export const MobileBottomSheet: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-400 pl-8 mb-2 truncate">
-                      {stop.houseNumber} {stop.address ? `• ${stop.address}` : ''}
-                    </p>
-
                     <div className="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-slate-800/80 pl-8">
-                      <div className="flex items-center gap-1.5 text-slate-400">
-                        <Calendar className="w-3.5 h-3.5 text-sky-400" />
-                        <span>{formatDate(stop.date)}</span>
+                      <div className="flex items-center gap-1.5 text-sky-400 font-medium">
+                        <Users className="w-3.5 h-3.5" />
+                        <span className="truncate">{stop.bccUnit || 'BCC Unit'}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-amber-400 font-semibold">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{formatTime(stop.scheduledArrival)}</span>
+                      <div className="flex items-center gap-1.5 text-slate-400 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{formatDate(stop.date)}</span>
                       </div>
                     </div>
                   </div>

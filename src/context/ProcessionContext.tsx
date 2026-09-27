@@ -262,7 +262,7 @@ export const ProcessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           source: 'stop_anchor',
           accuracy: 5,
         },
-        bannerMessage: `Mother Mary statue has arrived at ${targetStop.familyName} (${targetStop.houseNumber}).`,
+        bannerMessage: `Mother Mary statue has arrived at ${targetStop.familyName}${targetStop.bccUnit ? ` (${targetStop.bccUnit})` : ''}.`,
         lastUpdated: new Date().toISOString(),
       };
     });
@@ -293,12 +293,13 @@ export const ProcessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       const nextStop = prev.nextStopId ? updatedStops.find(s => s.id === prev.nextStopId) : null;
+
       return {
         ...prev,
         stops: updatedStops,
         currentStopId: null,
         bannerMessage: nextStop
-          ? `Procession is in transit towards ${nextStop.familyName} (${nextStop.houseNumber}).`
+          ? `Procession is in transit towards ${nextStop.familyName}${nextStop.bccUnit ? ` (${nextStop.bccUnit})` : ''}.`
           : `Procession is concluding at the final chapel.`,
         lastUpdated: new Date().toISOString(),
       };
@@ -313,15 +314,16 @@ export const ProcessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const addStop = async (stop: Partial<ProcessionStop>): Promise<boolean> => {
     const newStop: ProcessionStop = {
       id: `stop-${Date.now()}`,
-      order: data.stops.length + 1,
+      order: stop.order || data.stops.length + 1,
       familyName: stop.familyName || 'New Parishioner',
+      bccUnit: stop.bccUnit || 'BCC Unit 1',
       houseNumber: stop.houseNumber || `House #${data.stops.length + 1}`,
       address: stop.address || '',
       date: stop.date || new Date().toISOString().split('T')[0],
       scheduledArrival: stop.scheduledArrival || '18:00',
       scheduledDeparture: stop.scheduledDeparture || '18:30',
       status: 'pending',
-      coordinates: stop.coordinates || { lat: 15.2848, lng: 73.9862 },
+      coordinates: stop.coordinates || { lat: 8.595090, lng: 76.954867 },
       notes: stop.notes || '',
       contactNumber: stop.contactNumber || '',
     };

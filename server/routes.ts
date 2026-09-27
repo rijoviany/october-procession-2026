@@ -22,6 +22,46 @@ export function createApiRouter(io: SocketIOServer): Router {
     }
   });
 
+  // Resolve Google Maps Short or Full URL to Coordinates
+  router.post('/resolve-maps-url', async (req: Request, res: Response) => {
+    const { url } = req.body;
+    if (!url || typeof url !== 'string') {
+      res.status(400).json({ error: 'URL is required' });
+      return;
+    }
+
+    try {
+      // Follow redirects to get the full expanded Google Maps URL
+      const response = await fetch(url.trim(), {
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+      const finalUrl = response.url || url;
+
+      // Extract coordinates from expanded URL
+      let match = finalUrl.match(/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/);
+      if (!match) {
+        match = finalUrl.match(/[?&](?:q|query|ll)=(-?\d{1,2}\.\d+)[,%2C\s]+(-?\d{1,3}\.\d+)/i);
+      }
+      if (!match) {
+        match = finalUrl.match(/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/);
+      }
+
+      if (match) {
+        const lat = parseFloat(match[1]);
+        const lng = parseFloat(match[2]);
+        res.json({ success: true, coordinates: { lat, lng }, resolvedUrl: finalUrl });
+        return;
+      }
+
+      res.status(422).json({ success: false, message: 'Could not extract coordinates from this Google Maps link' });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message || 'Failed to resolve URL' });
+    }
+  });
+
   // Update Settings / Meta
   router.put('/procession/settings', (req: Request, res: Response) => {
     const data = store.getData();
