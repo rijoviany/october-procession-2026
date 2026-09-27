@@ -9,6 +9,7 @@ export const initialProcessionData: ProcessionData = {
   nextStopId: "stop-3",
   mapProvider: "leaflet",
   googleMapsApiKey: "",
+  cartoApiKey: "cb1_406k_1_8a9ea0e9a59d9cf597cf0557",
   adminPin: "1234",
   bannerMessage: "Procession is currently at The Fernandes Family residence. Rosary prayer in progress.",
   lastUpdated: new Date().toISOString(),

@@ -46,6 +46,7 @@ export interface ProcessionData {
   stops: ProcessionStop[];
   mapProvider: 'leaflet' | 'google';
   googleMapsApiKey?: string;
+  cartoApiKey?: string;
   adminPin: string;
   bannerMessage?: string;
   lastUpdated: string;

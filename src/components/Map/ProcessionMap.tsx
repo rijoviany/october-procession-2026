@@ -37,11 +37,14 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
   const [activeTileType, setActiveTileType] = useState<'streets' | 'satellite' | 'dark'>('streets');
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
-  // Tile layer URLs - High performance & 100% free tier CDN
+  const cartoApiKey = data?.cartoApiKey?.trim() || 'cb1_406k_1_8a9ea0e9a59d9cf597cf0557';
+  const cartoQuery = cartoApiKey ? `?api_key=${cartoApiKey}` : '';
+
+  // Tile layer URLs - High performance & CARTO CDN with provided API key
   const tileLayers = {
-    streets: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    streets: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${cartoQuery}`,
     satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    dark: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${cartoQuery}`
   };
 
   // Initialize Leaflet Map

@@ -15,6 +15,7 @@ export const AdminSettingsModal: React.FC<AdminSettingsModalProps> = ({ isOpen, 
   const [bannerMessage, setBannerMessage] = useState(data?.bannerMessage || '');
   const [adminPin, setAdminPin] = useState(data?.adminPin || '1234');
   const [googleMapsApiKey, setGoogleMapsApiKey] = useState(data?.googleMapsApiKey || '');
+  const [cartoApiKey, setCartoApiKey] = useState(data?.cartoApiKey || 'cb1_406k_1_8a9ea0e9a59d9cf597cf0557');
   const [mapProvider, setMapProvider] = useState<'leaflet' | 'google'>(data?.mapProvider || 'leaflet');
   const [isSaved, setIsSaved] = useState(false);
 
@@ -28,6 +29,7 @@ export const AdminSettingsModal: React.FC<AdminSettingsModalProps> = ({ isOpen, 
       bannerMessage,
       adminPin,
       googleMapsApiKey,
+      cartoApiKey,
       mapProvider,
     });
     setIsSaved(true);
@@ -143,7 +145,23 @@ export const AdminSettingsModal: React.FC<AdminSettingsModalProps> = ({ isOpen, 
               className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:border-sky-500"
             />
             <p className="text-[10px] text-slate-400 mt-1">
-              Leave blank to continue using the built-in Leaflet + CartoDB/Esri satellite tile system without needing any API keys.
+              Leave blank to continue using the built-in Leaflet + CARTO/Esri satellite tile system without needing any API keys.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">
+              CARTO Maps API Key
+            </label>
+            <input
+              type="text"
+              value={cartoApiKey}
+              onChange={e => setCartoApiKey(e.target.value)}
+              placeholder="cb1_..."
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:border-sky-500"
+            />
+            <p className="text-[10px] text-emerald-400 mt-1">
+              ✓ Active CARTO API Key configured for high-speed raster map tiles.
             </p>
           </div>
 
