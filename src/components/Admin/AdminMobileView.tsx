@@ -19,6 +19,7 @@ interface AdminMobileViewProps {
   onStartPickLocation: (callback: (coords: Coordinates) => void) => void;
   isPickingLocation: boolean;
   onMapClick: (coords: Coordinates) => void;
+  onCancelPick: () => void;
   onOpenSettings: () => void;
   onSwitchToPublic: () => void;
 }
@@ -27,6 +28,7 @@ export const AdminMobileView: React.FC<AdminMobileViewProps> = ({
   onStartPickLocation,
   isPickingLocation,
   onMapClick,
+  onCancelPick,
   onOpenSettings,
   onSwitchToPublic,
 }) => {
@@ -133,6 +135,7 @@ export const AdminMobileView: React.FC<AdminMobileViewProps> = ({
               isAdminMode={true}
               isPickingLocation={isPickingLocation}
               onMapClick={onMapClick}
+              onCancelPick={onCancelPick}
             />
 
             {/* Pinned Mobile Controller at Bottom */}

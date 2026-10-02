@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useProcession } from '../../context/ProcessionContext';
-import { formatDate, formatTime, getStatusBadge } from '../../utils/formatting';
+import { formatDate, formatTime, getStatusBadge, calculateDistance } from '../../utils/formatting';
 import { 
   ChevronUp, 
   ChevronDown, 
@@ -33,6 +33,30 @@ export const MobileBottomSheet: React.FC = () => {
 
   const currentStop = data.stops.find(s => s.id === data.currentStopId);
   const nextStop = data.stops.find(s => s.id === data.nextStopId);
+
+  let nextStopDistance = '';
+  if (nextStop && data.currentLocation) {
+    const dist = calculateDistance(
+      data.currentLocation.coordinates.lat,
+      data.currentLocation.coordinates.lng,
+      nextStop.coordinates.lat,
+      nextStop.coordinates.lng
+    );
+    nextStopDistance = dist.text;
+  }
+
+  // Calculate estimated time to next stop (rough estimate: 1 min per 50m)
+  let nextStopTimeEst = '? min';
+  if (nextStop && data.currentLocation) {
+    const dist = calculateDistance(
+      data.currentLocation.coordinates.lat,
+      data.currentLocation.coordinates.lng,
+      nextStop.coordinates.lat,
+      nextStop.coordinates.lng
+    );
+    const mins = Math.ceil(dist.meters / 50);
+    nextStopTimeEst = `${mins} min`;
+  }
 
   // Extract dates
   const availableDates = useMemo(() => {
@@ -81,7 +105,7 @@ export const MobileBottomSheet: React.FC = () => {
     <>
       {/* Floating Quick Action Buttons on Map for Mobile (Above Bottom Bar) */}
       {!isExpanded && (
-        <div className="absolute bottom-24 right-4 z-20 flex flex-col gap-2.5 lg:hidden">
+        <div className="absolute bottom-[200px] right-4 z-20 flex flex-col gap-2.5 lg:hidden">
           {/* Quick Focus on Live Statue */}
           <button
             onClick={handleCenterOnStatue}
@@ -114,54 +138,79 @@ export const MobileBottomSheet: React.FC = () => {
 
       {/* Floating Bottom Sheet */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-40 lg:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-800 rounded-t-3xl shadow-2xl transition-all duration-300 ease-out flex flex-col ${
-          isExpanded ? 'h-[82dvh] pb-safe' : 'h-20 pb-safe cursor-pointer'
+        className={`fixed inset-x-0 bottom-0 z-40 lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 rounded-t-3xl shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out flex flex-col ${
+          isExpanded ? 'h-[85dvh] pb-safe' : 'pb-safe'
         }`}
-        onClick={() => {
-          if (!isExpanded) setIsExpanded(true);
-        }}
       >
         {/* Drag Handle Bar */}
-        <div className="pt-2.5 pb-1 flex flex-col items-center flex-shrink-0">
+        <div 
+          className="pt-3 pb-2 flex flex-col items-center flex-shrink-0 cursor-pointer w-full"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           <div className="w-12 h-1.5 bg-slate-700 rounded-full" />
         </div>
 
-        {/* Collapsed Peek Header */}
+        {/* Collapsed Peek Content */}
         {!isExpanded && (
-          <div className="px-4 py-1.5 flex items-center justify-between gap-2 h-full">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
-                <Radio className="w-4 h-4 animate-pulse" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase">
-                    {currentStop ? `Stop #${currentStop.order}` : 'In Transit'}
-                  </span>
-                  <span className="text-[10px] text-slate-500">•</span>
-                  <span className="text-[10px] text-slate-400 truncate">
-                    {data.stops.filter(s => s.status === 'visited').length}/{data.stops.length} Visited
-                  </span>
+          <div className="px-4 pb-4 pt-1 flex flex-col gap-2.5">
+            {/* Currently At */}
+            <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex items-center justify-between shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-900 border-2 border-rose-500/80 p-0.5 overflow-hidden flex items-center justify-center flex-shrink-0 shadow">
+                  <img src="/mother-mary-statue.png" alt="Currently At" className="w-full h-full object-contain filter drop-shadow" />
                 </div>
-                <h4 className="text-xs font-bold text-slate-100 truncate">
-                  {currentStop ? currentStop.familyName : 'Procession on Road'}
-                </h4>
+                <div>
+                  <div className="text-[10px] text-slate-400 font-medium">
+                    Currently at
+                  </div>
+                  <div className="text-sm font-bold text-slate-100">
+                    {currentStop ? currentStop.familyName : 'Varghese House'}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right flex items-center gap-1 text-xs text-slate-400">
+                <Clock className="w-3.5 h-3.5 text-slate-500" />
+                <span>
+                  {data.lastUpdated ? new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '6:52 PM'}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {nextStop && (
-                <div className="text-right hidden xs:block">
-                  <span className="text-[9px] text-sky-400 uppercase font-bold block">Next</span>
-                  <span className="text-[11px] font-semibold text-slate-200">
-                    {formatTime(nextStop.scheduledArrival)}
-                  </span>
+            {/* Next Stop */}
+            {nextStop && (
+              <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex items-center justify-between shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-sky-600/20 border border-sky-500/40 text-sky-400 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-sky-400 font-bold uppercase tracking-wide">
+                      Next Stop
+                    </div>
+                    <div className="text-sm font-bold text-slate-100">
+                      {nextStop.familyName}
+                    </div>
+                  </div>
                 </div>
-              )}
-              <div className="p-2 rounded-xl bg-slate-800 text-slate-400">
-                <ChevronUp className="w-4 h-4" />
+                <div className="text-right flex items-center gap-2">
+                  <span className="text-[11px] font-semibold text-slate-300">
+                    {nextStopTimeEst} • {nextStopDistance}
+                  </span>
+                  <ArrowRight className="w-4 h-4 text-sky-400" />
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* View Button */}
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-3 rounded-xl mt-1 transition shadow-lg shadow-sky-900/30 flex items-center justify-center gap-2 active:scale-98"
+            >
+              <svg className="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" strokeWidth="2"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 18h6a3 3 0 0 0 3-3V9"/></svg>
+              <span>View Upcoming Houses</span>
+            </button>
           </div>
         )}
 
@@ -198,7 +247,7 @@ export const MobileBottomSheet: React.FC = () => {
                 placeholder="Search family name, house, or road..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-sky-500"
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-sky-500"
               />
               {searchQuery && (
                 <button
@@ -217,8 +266,8 @@ export const MobileBottomSheet: React.FC = () => {
                   onClick={() => setSelectedDate('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                     selectedDate === 'all'
-                      ? 'bg-sky-600 text-white'
-                      : 'bg-slate-800 text-slate-400'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-800/80 border border-slate-700 text-slate-300'
                   }`}
                 >
                   All Dates
@@ -229,8 +278,8 @@ export const MobileBottomSheet: React.FC = () => {
                     onClick={() => setSelectedDate(date)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                       selectedDate === date
-                        ? 'bg-sky-600 text-white'
-                        : 'bg-slate-800 text-slate-400'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-800/80 border border-slate-700 text-slate-300'
                     }`}
                   >
                     {formatDate(date)}
@@ -243,28 +292,28 @@ export const MobileBottomSheet: React.FC = () => {
             <div className="flex items-center gap-1.5 mb-3">
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
-                  statusFilter === 'all' ? 'bg-slate-700 text-white' : 'text-slate-400 bg-slate-800/60'
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                  statusFilter === 'all' ? 'bg-slate-700 text-white' : 'text-slate-400 bg-slate-800/60 border border-slate-700/50'
                 }`}
               >
                 All ({data.stops.length})
               </button>
               <button
                 onClick={() => setStatusFilter('pending')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   statusFilter === 'pending'
                     ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-                    : 'text-slate-400 bg-slate-800/60'
+                    : 'text-slate-400 bg-slate-800/60 border border-slate-700/50'
                 }`}
               >
                 Upcoming
               </button>
               <button
                 onClick={() => setStatusFilter('visited')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   statusFilter === 'visited'
                     ? 'bg-slate-700 text-slate-200 border border-slate-600'
-                    : 'text-slate-400 bg-slate-800/60'
+                    : 'text-slate-400 bg-slate-800/60 border border-slate-700/50'
                 }`}
               >
                 Visited
@@ -272,51 +321,77 @@ export const MobileBottomSheet: React.FC = () => {
             </div>
 
             {/* Scrollable list */}
-            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 pb-4">
               {filteredStops.map(stop => {
                 const isSelected = stop.id === selectedStopId;
                 const isCurrent = stop.status === 'current';
                 const isVisited = stop.status === 'visited';
                 const badge = getStatusBadge(stop.status);
+                
+                let distText = '';
+                let timeEst = '';
+                if (!isVisited && data.currentLocation) {
+                  const dist = calculateDistance(
+                    data.currentLocation.coordinates.lat,
+                    data.currentLocation.coordinates.lng,
+                    stop.coordinates.lat,
+                    stop.coordinates.lng
+                  );
+                  distText = dist.text;
+                  const mins = Math.ceil(dist.meters / 50);
+                  timeEst = `${mins}m`;
+                }
 
                 return (
                   <div
                     key={stop.id}
                     onClick={() => handleStopClick(stop)}
-                    className={`p-3.5 rounded-2xl border transition active:scale-[0.99] text-left ${
+                    className={`p-3.5 rounded-2xl border transition active:scale-[0.99] text-left cursor-pointer ${
                       isSelected
-                        ? 'bg-sky-950/70 border-sky-500 ring-1 ring-sky-500'
+                        ? 'bg-sky-900/40 border-sky-500 ring-1 ring-sky-500'
                         : isCurrent
-                        ? 'bg-emerald-950/40 border-emerald-500/50'
+                        ? 'bg-emerald-900/20 border-emerald-500/30'
                         : isVisited
-                        ? 'bg-slate-800/30 border-slate-800/80 opacity-75'
-                        : 'bg-slate-800/60 border-slate-700/60'
+                        ? 'bg-slate-800/40 border-slate-700/50 opacity-75'
+                        : 'bg-slate-800/80 border-slate-700'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
-                          isCurrent ? 'bg-emerald-500' : isVisited ? 'bg-slate-600' : 'bg-sky-600'
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
+                          isCurrent ? 'bg-emerald-600' : isVisited ? 'bg-slate-600' : 'bg-blue-600'
                         }`}>
                           {isVisited ? '✓' : stop.order}
-                        </span>
-                        <h4 className="font-bold text-slate-100 text-sm truncate">
-                          {stop.familyName}
-                        </h4>
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-slate-100 text-sm truncate">
+                            {stop.familyName}
+                          </h4>
+                          <div className="text-[11px] text-slate-400 truncate mt-0.5">
+                            {stop.houseNumber ? `${stop.houseNumber}, ` : ''}{stop.address || stop.bccUnit}
+                          </div>
+                        </div>
                       </div>
 
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.bg} ${badge.text} ${badge.border} flex-shrink-0`}>
-                        {badge.label}
-                      </span>
+                      <div className="flex flex-col items-end flex-shrink-0 gap-1.5">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.bg} ${badge.text} ${badge.border}`}>
+                          {badge.label}
+                        </span>
+                        {!isVisited && distText && (
+                          <span className="text-[10px] font-medium text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded-md border border-slate-700">
+                            {distText}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-slate-800/80 pl-8">
-                      <div className="flex items-center gap-1.5 text-sky-400 font-medium">
-                        <Users className="w-3.5 h-3.5" />
-                        <span className="truncate">{stop.bccUnit || 'BCC Unit'}</span>
+                    <div className="flex items-center justify-between text-[11px] text-slate-300 pt-2.5 mt-1 border-t border-slate-700/50 pl-11">
+                      <div className="flex items-center gap-1.5 text-sky-400/90 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{stop.scheduledArrival ? formatTime(stop.scheduledArrival) : 'Time TBD'}</span>
                       </div>
                       <div className="flex items-center gap-1.5 text-slate-400 font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <Calendar className="w-3.5 h-3.5" />
                         <span>{formatDate(stop.date)}</span>
                       </div>
                     </div>
@@ -330,3 +405,4 @@ export const MobileBottomSheet: React.FC = () => {
     </>
   );
 };
+

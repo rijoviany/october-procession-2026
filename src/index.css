@@ -92,3 +92,37 @@
     opacity: 0;
   }
 }
+
+/* Dark mode Leaflet zoom controls */
+.leaflet-control-zoom a {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+.leaflet-control-zoom a:hover {
+  background-color: #1e293b !important;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Outfit font utility */
+.font-display { font-family: 'Outfit', sans-serif; }
+
+/* Custom Leaflet marker overrides to guarantee visibility */
+.leaflet-div-icon.custom-stop-marker,
+.leaflet-div-icon.custom-statue-marker {
+  background: transparent !important;
+  border: none !important;
+  overflow: visible !important;
+}
+
+.custom-stop-marker {
+  z-index: 500 !important;
+}
+
+.custom-statue-marker {
+  z-index: 1000 !important;
+}
+

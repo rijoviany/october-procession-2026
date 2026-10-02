@@ -3,18 +3,20 @@ import L from 'leaflet';
 import { useProcession } from '../../context/ProcessionContext';
 import { ProcessionStop, Coordinates } from '../../types/procession';
 import { formatDate, formatTime, getStatusBadge } from '../../utils/formatting';
-import { Layers, Crosshair, Navigation, Sparkles, MapPin } from 'lucide-react';
+import { Layers, Crosshair, Navigation, Sparkles, MapPin, Check, X } from 'lucide-react';
 
 interface ProcessionMapProps {
   isAdminMode?: boolean;
   onMapClick?: (coords: Coordinates) => void;
   isPickingLocation?: boolean;
+  onCancelPick?: () => void;
 }
 
 export const ProcessionMap: React.FC<ProcessionMapProps> = ({
   isAdminMode = false,
   onMapClick,
   isPickingLocation = false,
+  onCancelPick,
 }) => {
   const {
     data,
@@ -36,6 +38,9 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
 
   const [activeTileType, setActiveTileType] = useState<'streets' | 'satellite' | 'osm'>('streets');
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [pendingPickCoords, setPendingPickCoords] = useState<Coordinates | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+  const previewMarkerRef = useRef<L.Marker | null>(null);
 
   // 100% Free, high-resolution, watermark-free global tile providers
   const tileLayers = {
@@ -69,6 +74,16 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
 
     tileLayerRef.current = tileLayer;
     mapInstanceRef.current = map;
+    setIsMapReady(true);
+
+    // Initial fit bounds so all landmarks and stops are immediately in view
+    if (data?.stops && data.stops.length > 0) {
+      const bounds = L.latLngBounds(data.stops.map(s => [s.coordinates.lat, s.coordinates.lng]));
+      if (data.currentLocation) {
+        bounds.extend([data.currentLocation.coordinates.lat, data.currentLocation.coordinates.lng]);
+      }
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 17 });
+    }
 
     // Architectural guideline: Resilient canvas sizing on all screen widths
     const timer = setTimeout(() => {
@@ -87,6 +102,7 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       resizeObserver.disconnect();
       map.remove();
       mapInstanceRef.current = null;
+      setIsMapReady(false);
     };
   }, []);
 
@@ -107,14 +123,43 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     tileLayerRef.current = newLayer;
   }, [activeTileType]);
 
-  // Handle map clicks (e.g. Admin adding a stop or repositioning statue)
+  // Handle map clicks — two-step: first click places a draggable preview marker
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
     const handleClick = (e: L.LeafletMouseEvent) => {
-      if (isPickingLocation && onMapClick) {
-        onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
+      if (!isPickingLocation || !onMapClick) return;
+
+      const coords = { lat: e.latlng.lat, lng: e.latlng.lng };
+      setPendingPickCoords(coords);
+
+      // Place or move the preview marker
+      if (previewMarkerRef.current) {
+        previewMarkerRef.current.setLatLng([coords.lat, coords.lng]);
+      } else {
+        const previewIcon = L.divIcon({
+          html: `<div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-full bg-amber-500 border-4 border-white shadow-2xl flex items-center justify-center text-slate-950 font-bold text-lg animate-bounce">📍</div>
+            <div class="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-amber-500 -mt-0.5"></div>
+          </div>`,
+          className: 'preview-pick-marker',
+          iconSize: [40, 52],
+          iconAnchor: [20, 52],
+        });
+
+        const marker = L.marker([coords.lat, coords.lng], {
+          icon: previewIcon,
+          draggable: true,
+          zIndexOffset: 2000,
+        }).addTo(map);
+
+        marker.on('dragend', () => {
+          const pos = marker.getLatLng();
+          setPendingPickCoords({ lat: pos.lat, lng: pos.lng });
+        });
+
+        previewMarkerRef.current = marker;
       }
     };
 
@@ -123,6 +168,35 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       map.off('click', handleClick);
     };
   }, [isPickingLocation, onMapClick]);
+
+  // Clean up preview marker when picking ends
+  useEffect(() => {
+    if (!isPickingLocation) {
+      if (previewMarkerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(previewMarkerRef.current);
+        previewMarkerRef.current = null;
+      }
+      setPendingPickCoords(null);
+    }
+  }, [isPickingLocation]);
+
+  // Confirm the picked location
+  const handleConfirmPick = () => {
+    if (pendingPickCoords && onMapClick) {
+      onMapClick(pendingPickCoords);
+      // cleanup handled by the isPickingLocation effect above
+    }
+  };
+
+  // Cancel the pick
+  const handleCancelPick = () => {
+    if (previewMarkerRef.current && mapInstanceRef.current) {
+      mapInstanceRef.current.removeLayer(previewMarkerRef.current);
+      previewMarkerRef.current = null;
+    }
+    setPendingPickCoords(null);
+    onCancelPick?.();
+  };
 
   // Draw or update the Custom Procession Pathway Polyline
   useEffect(() => {
@@ -145,17 +219,17 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     } else {
       // Create glowing procession pathway line
       const polyline = L.polyline(latLngs, {
-        color: '#0284c7', // Marian blue
-        weight: 6,
-        opacity: 0.85,
+        color: '#2563eb', // Bright blue matching reference
+        weight: 5,
+        opacity: 0.9,
         lineJoin: 'round',
         lineCap: 'round',
-        dashArray: undefined
+        dashArray: '12 6'
       }).addTo(map);
 
       routePolylineRef.current = polyline;
     }
-  }, [data?.customRouteCoordinates]);
+  }, [data?.customRouteCoordinates, isMapReady]);
 
   // Render & Update Stop Markers
   useEffect(() => {
@@ -177,20 +251,27 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     data.stops.forEach((stop) => {
       const isCurrent = stop.status === 'current';
       const isVisited = stop.status === 'visited';
+      // Check if stop is church or house
+      const isChurch = stop.order === 1 || stop.familyName.toLowerCase().includes('church');
+      const pinColor = isCurrent ? '#10b981' : isVisited ? '#64748b' : '#0284c7';
+      const pinBorder = isCurrent ? '#34d399' : isVisited ? '#94a3b8' : '#38bdf8';
 
-      const pinBg = isCurrent ? '#10b981' : isVisited ? '#64748b' : '#0284c7';
-      const pinBorder = isCurrent ? '#059669' : isVisited ? '#475569' : '#0369a1';
-
-      // SVG custom icon for house stop with order number
+      // House / Church marker matching reference design with visible house icon & label card
       const iconHtml = `
-        <div class="relative group cursor-pointer transition-transform duration-200 hover:scale-110">
-          <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-white shadow-lg text-sm border-2" 
-               style="background-color: ${pinBg}; border-color: ${pinBorder}; box-shadow: 0 4px 12px rgba(0,0,0,0.35);">
-            ${isVisited ? '✓' : stop.order}
+        <div style="display: flex; align-items: center; gap: 6px; pointer-events: auto; transform: translate(0, 0); white-space: nowrap;">
+          <!-- Round Badge with Icon -->
+          <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: ${pinColor}; border: 2.5px solid ${pinBorder}; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.6); flex-shrink: 0;">
+            ${isChurch ? `
+              <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2v3m-2-2h4M12 6l-5 4v11h10V10l-5-4zm-1 9v4h2v-4h-2z"/></svg>
+            ` : `
+              <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+            `}
           </div>
-          ${isCurrent ? '<div class="absolute -inset-1 rounded-full border-2 border-emerald-400 animate-ping opacity-75"></div>' : ''}
-          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-0.5 bg-slate-900/90 text-[10px] font-medium text-white rounded whitespace-nowrap border border-slate-700 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-            ${stop.familyName}
+          
+          <!-- Stop Name Label Badge -->
+          <div style="background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(71, 85, 105, 0.8); border-radius: 8px; padding: 3px 8px; font-size: 11px; font-weight: 700; color: #f8fafc; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 4px;">
+            <span>${stop.familyName}</span>
+            ${isVisited ? '<span style="color: #34d399; font-size: 10px;">✓</span>' : ''}
           </div>
         </div>
       `;
@@ -198,9 +279,9 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       const customIcon = L.divIcon({
         html: iconHtml,
         className: 'custom-stop-marker',
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -20],
+        iconSize: [160, 34],
+        iconAnchor: [16, 17],
+        popupAnchor: [16, -18],
       });
 
       const popupHtml = `
@@ -264,7 +345,16 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
         currentMarkers.set(stop.id, newMarker);
       }
     });
-  }, [data?.stops, setSelectedStopId]);
+
+    // Auto-frame map to encompass all stops & statue
+    if (data.stops.length > 0) {
+      const bounds = L.latLngBounds(data.stops.map(s => [s.coordinates.lat, s.coordinates.lng]));
+      if (data.currentLocation) {
+        bounds.extend([data.currentLocation.coordinates.lat, data.currentLocation.coordinates.lng]);
+      }
+      map.fitBounds(bounds, { padding: [80, 80], maxZoom: 17 });
+    }
+  }, [data?.stops, setSelectedStopId, isMapReady]);
 
   // Render & Update Radiant Live Statue Marker
   useEffect(() => {
@@ -274,13 +364,19 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     const loc = data.currentLocation.coordinates;
 
     const statueIconHtml = `
-      <div class="relative cursor-pointer">
+      <div style="position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; pointer-events: auto;">
         <div class="statue-halo-pulse"></div>
-        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 via-sky-500 to-indigo-600 p-0.5 shadow-2xl animate-subtle-float flex items-center justify-center border-2 border-amber-300">
-          <img src="/statue-icon.svg" alt="Mother Mary Statue" class="w-8 h-8 drop-shadow-md" />
+        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+          <!-- Glowing circular portrait badge -->
+          <div style="width: 54px; height: 54px; border-radius: 9999px; background: #0f172a; border: 2.5px solid #fbbf24; box-shadow: 0 0 20px rgba(245, 158, 11, 0.7); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 2px;">
+            <img src="/mother-mary-statue.png" alt="Mother Mary Procession" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));" />
+          </div>
+          <!-- Red location indicator pin dot -->
+          <span style="position: absolute; bottom: -3px; width: 12px; height: 12px; border-radius: 9999px; background-color: #e11d48; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.6);"></span>
         </div>
-        <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow tracking-wider uppercase whitespace-nowrap">
-          LIVE STATUE
+        <div style="margin-top: 5px; padding: 2px 8px; border-radius: 9999px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(251, 191, 36, 0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+          <span style="width: 6px; height: 6px; border-radius: 9999px; background-color: #34d399;"></span>
+          <span style="font-size: 9px; font-weight: 800; color: #fde047; text-transform: uppercase; letter-spacing: 0.05em;">Live Statue</span>
         </div>
       </div>
     `;
@@ -288,9 +384,9 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     const statueIcon = L.divIcon({
       html: statueIconHtml,
       className: 'custom-statue-marker',
-      iconSize: [48, 48],
-      iconAnchor: [24, 24],
-      popupAnchor: [0, -28],
+      iconSize: [64, 76],
+      iconAnchor: [32, 45],
+      popupAnchor: [0, -48],
     });
 
     const statuePopupHtml = `
@@ -338,7 +434,7 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
     if (followLiveStatue && !mapCenterTarget) {
       map.panTo([loc.lat, loc.lng], { animate: true, duration: 1 });
     }
-  }, [data?.currentLocation, followLiveStatue, isAdminMode, updateLiveLocation]);
+  }, [data?.currentLocation, followLiveStatue, isAdminMode, updateLiveLocation, isMapReady]);
 
   // Center on target stop when requested
   useEffect(() => {
@@ -381,11 +477,44 @@ export const ProcessionMap: React.FC<ProcessionMapProps> = ({
       {/* Map DOM node */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
-      {/* Picking Location Banner in Admin Mode */}
+      {/* Location Picker UI — Two-step: tap to place marker, then confirm */}
       {isPickingLocation && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-500 text-slate-950 px-4 py-2 rounded-full font-bold text-xs shadow-xl flex items-center gap-2 animate-bounce">
-          <MapPin className="w-4 h-4" />
-          Click anywhere on the map to set the house location
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+          {!pendingPickCoords ? (
+            /* Step 1: Instruction banner */
+            <div className="bg-amber-500 text-slate-950 px-4 py-2.5 rounded-2xl font-bold text-xs shadow-xl flex items-center gap-2 animate-bounce">
+              <MapPin className="w-4 h-4" />
+              Tap on the map to place the house location
+            </div>
+          ) : (
+            /* Step 2: Confirm / Cancel with coordinates */
+            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl p-4 flex flex-col items-center gap-3 min-w-[280px]">
+              <div className="flex items-center gap-2 text-amber-400">
+                <MapPin className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Location Selected</span>
+              </div>
+              <p className="text-xs text-slate-300 font-mono">
+                {pendingPickCoords.lat.toFixed(6)}, {pendingPickCoords.lng.toFixed(6)}
+              </p>
+              <p className="text-[11px] text-slate-500">Drag the marker to adjust, then confirm</p>
+              <div className="flex items-center gap-2 w-full">
+                <button
+                  onClick={handleCancelPick}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 border border-slate-700"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmPick}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg"
+                >
+                  <Check className="w-4 h-4" />
+                  Confirm Location
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
